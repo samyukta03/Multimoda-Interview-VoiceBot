@@ -1,0 +1,4 @@
+{
+  "files": [".html", "static/css/*.css"],
+  "proxy": "http://localhost:5000"
+}

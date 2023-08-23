@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python HTML UI</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+    .glow {
+    box-shadow: 0 0 50px yellow;
+     }
+</style>
+</head>
+<body>
+    <header>Voicebot Assistant</header>
+    <br><br><br><br>
+    <button class="start" id="run-btn">Start interview</button>
+    <section class="main">
+        <div class="user-area">
+              <img id="user-pic" src="{{ url_for('static', filename= 'images/user-avatar.jpg') }}">
+        </div>
+        <div class="chatarea-main">
+            <div class="chatarea-outer">
+                <!-- <div class="chatarea-inner user">Hello hi, how area you, i am good. What about you!</div>
+                <div class="chatarea-inner chatbot">Hello hi, how area you, i am good. What about you!</div>
+                <div class="chatarea-inner user">Hello hi, how area you, i am good. What about you!</div> -->
+            </div>
+        </div>    
+        <div class="chatbot-area">
+             <img  id="candidate-pic" src="{{ url_for('static', filename= 'images/user-avatar.jpg') }}">
+        </div>
+</section>
+    <!-- <h1>Python HTML UI</h1> -->
+    <div class="container" id="results"></div>
+
+    <script>
+        $(document).ready(function() {
+            $("#run-btn").click(function() {
+                $.ajax({
+                    url: "/run",
+                    type: "POST",
+                    success: function(data) {
+                        $("#results").text(data);
+                    },
+                    error: function() {
+                        alert("Error running Python code.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

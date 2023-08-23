@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .feedback-box {
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.feedback-box h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+.feedback-box p {
+  font-size: 16px;
+  margin: 10px 0 5px;
+}
+
+.feedback-box pre {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.feedback-box code {
+  font-family: monospace;
+}
+
+.chart {
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 30px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.bar {
+  background-color: #00bfff;
+  border-radius: 5px;
+  height: 100%;
+}
+
+.percentage {
+  color: #000;
+  font-size: 16px;
+  font-weight: bold;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+    </style>
+</head>
+<body>
+<div class="feedback-box">
+    <h2>Interview Feedback</h2>
+    <p>Output:</p>
+    <div class="chart">
+        <div class="bar" style="width: 80%;"></div>
+        <div class="percentage">80%</div>
+      </div>
+  </div>
+</body>

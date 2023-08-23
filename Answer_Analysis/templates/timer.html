@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Mar 26 18:47:15 2023
+
+@author: Dhanya
+"""
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Timer</title>
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body><script> function countdown() { var time_left = 3; document.getElementById("timer").innerHTML = time_left; if (time_left == 0) { clearInterval(interval); document.getElementById("timer").innerHTML = "Time's up!"; } time_left--; } var interval = setInterval(countdown, 1000);</script><script> function countdown() { var time_left = 3; document.getElementById("timer").innerHTML = time_left; if (time_left == 0) { clearInterval(interval); document.getElementById("timer").innerHTML = "Time's up!"; } time_left--; } var interval = setInterval(countdown, 1000);</script>
+    
+    <h1>Timer</h1>
+    <button id="run-btn">Start Timer</button>
+    <p>Time left: <span id="timer"></span></p>
+     <script>
+         $(document).ready(function() {
+             $("#run-btn").click(function() {
+                 console.log("In here")
+                 $.ajax({
+                     url: "/timer",
+                     type: "POST",
+                     success: function(data) {
+                        console.log("yay")
+                     },
+                     error: function() {
+                         alert("Error running Python code.");
+                     }
+                 });
+             });
+         });
+     </script>
+</body>
+</html>

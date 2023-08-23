@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "entr": "^0.0.0",
+    "request": "^2.88.2",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.29.1",
+    "gulp": "^3.9.1",
+    "livereload-js": "^4.0.1"
+  }
+}

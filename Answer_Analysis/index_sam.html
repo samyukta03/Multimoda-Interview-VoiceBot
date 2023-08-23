@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python HTML UI</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename= 'E:/Answer Analysis/Voice-Assistant/css/style.css') }}"> -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+
+<!-- CSS for the glowing effect -->
+<style>
+  #output{
+    color: #fff;
+  }
+  .glow {
+    box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #ff00de, 0 0 70px #ff00de, 0 0 80px #ff00de, 0 0 100px #ff00de, 0 0 150px #ff00de;
+    animation: glow-animation 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow-animation {
+    from {
+      opacity: 0.8;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+.feedback-box h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+.feedback-box p {
+  color: #fff;
+  font-size: 16px;
+  margin: 10px 0 5px;
+}
+
+.feedback-box pre {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.feedback-box code {
+  font-family: monospace;
+}
+
+.chart {
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 30px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.bar1{
+    background-color: red;
+  border-radius: 5px;
+  height: 100%;
+}
+.bar {
+  background-color: #00bfff;
+  border-radius: 5px;
+  height: 100%;
+}
+
+.percentage {
+  color: #000;
+  font-size: 16px;
+  font-weight: bold;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#temp{
+    color: #fff;
+}
+.message {
+  background-color: #9ceffa;
+  color: #fc0909;
+  font-size: large;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+<div class="container background-color: rgb(255,0,255);">
+        <div class="row">
+            <h2 class="text-center">
+                 <font color="white"> Interview Ace</font>
+            </h2>
+            ​
+          <!--
+          <div class="col-md-4 col-md-offset-4">
+          -->
+             <center> <button class="btn btn-info" id="run-btn" onclick="recognize()">Start interview</button> </center>
+             <img id="user-pic" src="{{ url_for('static', filename= 'images/user-avatar.jpg') }}">
+              <img id="cand-pic" src="{{ url_for('static', filename= 'images/candidate.jpg') }}">
+              <center> <button [disabled]="!isCompleted" class="btn btn-info" id="view-btn" onclick=" getExcel_data('final_result.xlsx','final_score.xlsx','Final')">View results</button> </center>
+               
+              <div class="feedback-box" id="output">
+              </div>
+              <div class="feedback-box" id="output-ans">
+
+              </div>
+             
+        </div>
+        <div id="app"></div>
+
+
+    </div>
+
+    <script>
+        let isCompleted = false;
+        var button = document.getElementById('view-btn')
+        button.disabled= !isCompleted
+        console.log(button.disabled)
+        $(document).ready(function() {
+            $("#run-btn").click(function() {
+                $.ajax({
+                    url: "/run",
+                    type: "POST",
+                    success: function(data) {
+                        $("#results").text(data);
+                        isCompleted=true;
+                        button.disabled=false
+                    },
+                    error: function() {
+                        alert("Error running Python code.");
+                    }
+                });
+            });
+        });
+    </script>
+    <!-- HTML markup for the image -->
+
+
+
+<!-- JavaScript to detect microphone input and toggle the glow class -->
+<script>
+    let count=0
+    async function recognize(){
+        console.log(isCompleted)
+var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+console.log("In here 2")
+// Set recognition options
+recognition.continuous = true;
+recognition.interimResults = true;
+recognition.lang = 'en-IN';
+
+// Start recognition and set a timeout
+recognition.start();
+console.log("In here 3")
+
+recognition.onstart=()=>{
+  console.log("started")
+}
+// var recognitionTimeout = setTimeout(function() {
+//     recognition.stop();
+// }, 10000000); // Stop recognition after 5 seconds
+
+// Add event listeners to handle recognition results and errors
+recognition.onresult = function(event) {
+    console.log("In here result")
+    var interimTranscript = "";
+    for (var i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+            var finalTranscript = event.results[i][0].transcript;
+            console.log("Final transcript: ", finalTranscript);
+        } else {
+            interimTranscript += event.results[i][0].transcript;
+        }
+    }
+    if(interimTranscript!==null)
+        {
+            console.log("hey1")
+            const cand= document.getElementById('cand-pic')
+                cand.classList.add('glow')
+
+        }
+        inter=interimTranscript.toString()
+        console.log(inter,inter.length)
+        if (interimTranscript && interimTranscript.toString().length) {
+         console.log("Interim transcript: ", interimTranscript, typeof(interimTranscript), interimTranscript.toString().length);
+         } else {
+                console.log("heyyy")
+               const cand= document.getElementById('cand-pic')
+                cand.classList.remove('glow')
+              console.log("Interim transcript is undefined or has no length.");
+        }
+    // if(interimTranscript===null){
+    //     console.log("heyyy")
+    //     const cand= document.getElementById('cand-pic')
+    //             cand.classList.remove('glow')
+    // }
+};
+
+recognition.onerror = function(event) {
+    console.log("Error occurred in recognition: ", event.error);
+};
+
+// Add an event listener to handle recognition end
+recognition.onend = function() {
+    while(count<=7)
+    {
+      console.log(count)
+     recognition.start()
+     count++;
+    }
+    console.log("Recognition ended.");
+};
+    }
+</script>
+
+
+<script>
+  function getExcel_data(filepath,filepath2, sheetName){
+    console.log("Inside to get excel data")
+    const xhr1 = new XMLHttpRequest();
+            xhr1.open("GET", "http://localhost:8080/" + filepath, true);
+            xhr1.responseType = "arraybuffer";
+            xhr1.onload = function() {
+                const data = new Uint8Array(xhr1.response);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheet = workbook.Sheets[sheetName];
+                const parsedData = XLSX.utils.sheet_to_json(sheet);
+                console.log(parsedData)
+                const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                const column4Data = sheetData.map(row => row[3]);
+                console.log(sheetData[1])
+                // console.log(thirdColumnValues);
+                const dataContainer = document.getElementById("output");
+                let engaging = parseFloat(sheetData[1][0]).toFixed(2);
+                let engagingFb='Keep Practicing! You are good!'
+                console.log(sheetData[2][0])
+                if(sheetData[2][0]!=null){
+                   engagingFb=sheetData[2][0]
+                }
+                let calm = parseFloat(sheetData[1][1]).toFixed(2);
+                let calmFb='Keep Practicing! You are good!'
+                if(sheetData[2][1]!=null){
+                   calmFb=sheetData[2][1]
+                }
+                let excited =  parseFloat(sheetData[1][2]).toFixed(2);
+                let excitedFb='Keep Practicing! You are good!'
+                if(sheetData[2][2]!=null){
+                   excitedFb=sheetData[2][2]
+                }
+                let friendly = parseFloat(sheetData[1][3]).toFixed(2);
+                let friendlyFb='Keep Practicing! You are good!'
+                if(sheetData[2][3]!=null){
+                   friendlyFb=sheetData[2][3]
+                }
+                let no_fillers =  parseFloat(sheetData[1][4]).toFixed(2);
+                let nofillersFb='Keep Practicing! You are good!'
+                if(sheetData[2][4]!=null){
+                   nofillersFb=sheetData[2][4]
+                }
+                let focused =  parseFloat(sheetData[1][5]).toFixed(2);
+                let focusedFb='Keep Practicing! You are good!'
+                if(sheetData[2][5]!=null){
+                   focusedFb=sheetData[2][5]
+                }
+                let pause =  parseFloat(sheetData[1][6]).toFixed(2);
+                let pauseFb='Keep Practicing! You are good!'
+                if(sheetData[2][6]!=null){
+                   pauseFb=sheetData[2][6]
+                }
+                let speaking =  parseFloat(sheetData[1][7]).toFixed(2);
+                let speakingrateFb='Keep Practicing! You are good!'
+                if(sheetData[2][7]!=null){
+                   speakingrateFb=sheetData[2][7]
+                }
+                let structure = parseFloat(sheetData[1][8]).toFixed(2);
+                let strucAnsFb='Keep Practicing! You are good!'
+                if(sheetData[2][8]!=null){
+                   strucAnsFb=sheetData[2][8]
+                }
+                let recommended = parseFloat(sheetData[1][9]).toFixed(2);
+                let recomdhiringFb='Keep Practicing! You are good!'
+                if(sheetData[2][9]!=null){
+                   recomdhiringFb=sheetData[2][9]
+                }
+                //  dataContainer.innerHTML = dataContainer.innerHTML = '<h2>Interview Performance</h2><p>Engaging:</p><div class="chart"><div class="bar" style="width: ' + engaging + '%;"></div><div class="percentage">' + engaging + '%</div> </div>  <br> <div class="message">' + engagingFb+'</div>'+'<br> <p>Calm:</p><div class="chart"><div class="bar" style="width: ' + calm + '%;"></div><div class="percentage">' + calm + '%</div> </div>  <br> <p>Excited:</p><div class="chart"><div class="bar" style="width: ' + excited + '%;"></div><div class="percentage">' + excited + '%</div> </div> <br> <p>Friendly:</p><div class="chart"><div class="bar" style="width: ' + friendly + '%;"></div><div class="percentage">' + friendly + '%</div> </div> <br> <p>No fillers:</p><div class="chart"><div class="bar" style="width: ' + no_fillers + '%;"></div><div class="percentage">' + no_fillers + '%</div> </div> <br> <p>Focused:</p><div class="chart"><div class="bar" style="width: ' + focused + '%;"></div><div class="percentage">' + focused + '%</div> </div> <br> <p>Pause:</p><div class="chart"><div class="bar" style="width: ' + pause+ '%;"></div><div class="percentage">' + pause + '%</div> </div> <br> <p>Speaking rate:</p><div class="chart"><div class="bar" style="width: ' + speaking + '%;"></div><div class="percentage">' + speaking + '%</div> </div> <br> <p>Structures answers:</p><div class="chart"><div class="bar" style="width: ' + structure+ '%;"></div><div class="percentage">' + structure + '%</div> </div>' ;
+                dataContainer.innerHTML = dataContainer.innerHTML = '<h2>Interview Performance</h2><p>Engaging:</p><div class="chart"><div class="bar" style="width: ' + engaging + '%;"></div><div class="percentage">' + engaging + '%</div> </div>  <br> <div class="message">' + engagingFb+'</div>'+'<br> <p>Calm:</p><div class="chart"><div class="bar" style="width: ' + calm + '%;"></div><div class="percentage">' + calm + '%</div> </div> <br> <div class="message">' + calmFb +'</div>'+'<br> <p>Excited:</p><div class="chart"><div class="bar" style="width: ' + excited + '%;"></div><div class="percentage">' + excited + '%</div> </div> <br> <div class="message">' + excitedFb +'</div>'+'<br> <p>Friendly:</p><div class="chart"><div class="bar" style="width: ' + friendly + '%;"></div><div class="percentage">' + friendly + '%</div> </div> <br> <div class="message">' + friendlyFb +'</div>'+'<br> <p>No fillers:</p><div class="chart"><div class="bar" style="width: ' + no_fillers + '%;"></div><div class="percentage">' + no_fillers + '%</div> </div> <br> <div class="message">' + nofillersFb +'</div>'+'<br> <p>Focused:</p><div class="chart"><div class="bar" style="width: ' + focused + '%;"></div><div class="percentage">' + focused + '%</div> </div> <br> <div class="message">' + focusedFb+'</div>'+'<br> <p>Pause:</p><div class="chart"><div class="bar" style="width: ' + pause+ '%;"></div> <div class="percentage">' + pause + '%</div> </div> <br> <div class="message">' + pauseFb +'</div>'+'<br> <p>Speaking rate:</p><div class="chart"><div class="bar" style="width: ' + speaking + '%;"></div><div class="percentage">' + speaking + '%</div> </div> <br> <div class="message">' + speakingrateFb+'</div>'+'<br> <p>Structures answers:</p><div class="chart"><div class="bar" style="width: ' + structure+ '%;"></div><div class="percentage">' + structure + '%</div> <br> <div class="message">' + strucAnsFb+'</div>'+'<br> </div> <br><br><br>' ;
+            };
+            const xhr2 = new XMLHttpRequest();
+            xhr2.open("GET", "http://localhost:8080/" + filepath2, true);
+            xhr2.responseType = "arraybuffer";
+            xhr2.onload = function() {
+                const data = new Uint8Array(xhr2.response);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheet = workbook.Sheets[sheetName];
+                const parsedData = XLSX.utils.sheet_to_json(sheet);
+                console.log(parsedData)
+                const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                console.log(sheetData[0][0])
+                let relevancy=sheetData[0][0].toFixed(2)
+                const dataContainer = document.getElementById("output-ans");
+                dataContainer.innerHTML = '<br> <p>Answer relevancy:</p><div class="chart"><div class="bar1" style="width: ' + relevancy + '%;"></div><div class="percentage">' + relevancy + '%</div> </div>'
+            }
+            xhr2.send()
+            xhr1.send();
+  }
+
+    // var workbook = new Excel.Workbook();
+    //    workbook.xlsx.load(data)
+    //      .then(workbook => {
+    //         console.log(workbook, 'workbook instance');
+
+    //          workbook.eachSheet((sheet, id) => {
+    //             sheet.eachRow((row, rowIndex) => {
+    //             console.log(row.values, rowIndex);
+    //             });
+    //          });
+    //     });
+</script>
+</body>
+</html>
